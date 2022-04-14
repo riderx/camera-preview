@@ -1,7 +1,7 @@
 
   Pod::Spec.new do |s|
     s.name = 'ForgrCameraPreview'
-    s.version = '3.0.1'
+    s.version = '3.0.3'
     s.summary = 'Camera preview'
     s.license = 'MIT'
     s.homepage = 'https://github.com/riderx/camera-preview.git'
