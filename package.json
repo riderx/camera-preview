@@ -1,5 +1,5 @@
 {
-  "name": "@capacitor-community/camera-preview",
+  "name": "@forgr/camera-preview",
   "version": "3.0.0",
   "description": "Camera preview",
   "main": "dist/esm/index.js",
@@ -43,9 +43,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/capacitor-community/camera-preview.git"
+    "url": "https://github.com/riderx/camera-preview.git"
   },
   "bugs": {
-    "url": "https://github.com/capacitor-community/camera-preview/issues"
+    "url": "https://github.com/riderx/camera-preview/issues"
   }
 }
