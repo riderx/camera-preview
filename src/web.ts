@@ -1,5 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
-import {
+
+import type {
   CameraPreviewOptions,
   CameraPreviewPictureOptions,
   CameraPreviewPlugin,
@@ -66,11 +67,14 @@ export class CameraPreviewWeb extends WebPlugin implements CameraPreviewPlugin {
 
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
           const constraints: MediaStreamConstraints = {
-            video: true,
+            video: {
+              width: { ideal: options.width },
+              height: { ideal: options.height },
+            },
           };
 
           if (options.position === 'rear') {
-            constraints.video = { facingMode: 'environment' };
+            (constraints.video as MediaTrackConstraints).facingMode = 'environment';
             this.isBackCamera = true;
           } else {
             this.isBackCamera = false;
@@ -94,6 +98,14 @@ export class CameraPreviewWeb extends WebPlugin implements CameraPreviewPlugin {
     });
   }
 
+  async startRecordVideo(): Promise<{}> {
+    throw this.unimplemented('Not implemented on web.');
+  }
+
+  async stopRecordVideo(): Promise<{}> {
+    throw this.unimplemented('Not implemented on web.');
+  }
+
   async stop(): Promise<any> {
     const video = <HTMLVideoElement>document.getElementById('video');
     if (video) {
@@ -102,15 +114,15 @@ export class CameraPreviewWeb extends WebPlugin implements CameraPreviewPlugin {
       const st: any = video.srcObject;
       const tracks = st.getTracks();
 
-      for (var i = 0; i < tracks.length; i++) {
-        var track = tracks[i];
+      for (let i = 0; i < tracks.length; i++) {
+        const track = tracks[i];
         track.stop();
       }
       video.remove();
     }
   }
 
-  async capture(_options: CameraPreviewPictureOptions): Promise<any> {
+  async capture(options: CameraPreviewPictureOptions): Promise<any> {
     return new Promise((resolve, _) => {
       const video = <HTMLVideoElement>document.getElementById('video');
       const canvas = document.createElement('canvas');
@@ -127,8 +139,19 @@ export class CameraPreviewWeb extends WebPlugin implements CameraPreviewPlugin {
         context.scale(-1, 1);
       }
       context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+
+      let base64EncodedImage;
+
+      if (options.quality != undefined) {
+        base64EncodedImage = canvas
+          .toDataURL('image/jpeg', options.quality / 100.0)
+          .replace('data:image/jpeg;base64,', '');
+      } else {
+        base64EncodedImage = canvas.toDataURL('image/png').replace('data:image/png;base64,', '');
+      }
+
       resolve({
-        value: canvas.toDataURL('image/png').replace('data:image/png;base64,', ''),
+        value: base64EncodedImage,
       });
     });
   }
@@ -158,10 +181,3 @@ export class CameraPreviewWeb extends WebPlugin implements CameraPreviewPlugin {
     }
   }
 }
-
-const CameraPreview = new CameraPreviewWeb();
-
-export { CameraPreview };
-
-import { registerWebPlugin } from '@capacitor/core';
-registerWebPlugin(CameraPreview);
